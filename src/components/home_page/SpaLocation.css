@@ -1,0 +1,176 @@
+/* Social Section */
+.spa-container {
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1200px;
+  gap: 20px;
+  padding: 20px;
+  font-family: 'Optima', Arial, sans-serif;
+  /* text-align: center; */
+  background-color: #faf3e0;
+  /* Premium charcoal color */
+  color: #333333;
+  /* White text for readability */
+}
+
+.social-section {
+  margin: 0 auto 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  max-width: 1200px;
+  gap: 20px;
+}
+
+.social-heading {
+  font-family: "Didot", Georgia, serif;
+  font-size: 24px;
+  color: #333;
+}
+
+.social-image {
+  width: 30%;
+  /* Image occupies 1/3 of the container */
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.textsection {
+  max-width: 600px;
+  padding: 20px;
+  color: #2c2c2c;
+}
+
+/* Location Section */
+.locationheading {
+  font-family: "Didot", Georgia, serif;
+  font-size: 2rem;
+  margin: 10px 0 20px;
+  color: #2c2c2c;
+}
+
+.locationdescription {
+  text-align: left;
+  width: auto;
+}
+
+/* Map Section */
+.map-section {
+  margin: 20px 0;
+}
+
+.map-iframe {
+  width: 100%;
+  height: 350px;
+  border: 0;
+  border-radius: 8px;
+}
+
+/* Info Section */
+.info-section {
+  margin-top: 20px;
+}
+
+.info-columns {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.quick-links ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.quick-links li {
+  margin: 5px 0;
+}
+
+.quick-links a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.quick-links a:hover {
+  text-decoration: underline;
+}
+
+.quick-links,
+.getting-here,
+.hours {
+  text-align: left;
+}
+
+h3 {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+p {
+  margin: 5px 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .spa-container {
+    padding: 20px;
+    font-family: 'Optima', Arial, sans-serif;
+    text-align: center;
+    background-color: #faf3e0;
+    /* Premium charcoal color */
+    color: #333333;
+    /* White text for readability */
+  }
+
+  /* Divider: Horizontal Style */
+  .divider {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, #b0b0b0, #bbb, #b0b0b0);
+    margin: 15px 0;
+    border-radius: 5px;
+  }
+
+  /* Social Section: Stack Vertically */
+  .social-section {
+    flex-direction: column;
+    text-align: center;
+    padding: 0px;
+  }
+
+  /* Info Columns: Stack Vertically */
+  .info-columns {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .quick-links,
+  .getting-here,
+  .hours {
+    text-align: center;
+    width: 100%;
+    /* Full width for each section */
+    margin-bottom: 20px;
+    /* Add spacing between stacked items */
+  }
+
+  /* Social Image: Hide on Small Screens */
+  .social-image {
+    display: none;
+  }
+
+  .locationheading,
+  .textsection {
+    max-width: 100%;
+    color: #333333;
+  }
+
+  .locationdescription {
+    text-align: center;
+    width: auto;
+  }
+}

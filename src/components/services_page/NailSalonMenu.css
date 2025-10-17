@@ -1,0 +1,119 @@
+/* General container styling */
+.nsm-page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.nsm-menu-container {
+  max-width: 1200px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* Add space between sections */
+  gap: 2rem;
+  /* Optional: additional horizontal gap */
+  padding: 2rem;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.nsm-menu-section {
+  flex: 1;
+  /* Allow sections to grow equally */
+  min-width: 220px;
+  /* Prevent sections from getting too narrow */
+  text-align: left;
+}
+
+
+/* Menu category style */
+.nsm-menu-category {
+  font-family: "Didot", Georgia, serif;
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #d6336c;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid #d6336c;
+  padding-bottom: 0.2rem;
+}
+
+/* Table layout */
+.nsm-menu-table {
+  font-family: "Optima", arial;
+  width: 100%;
+  /* Ensure table takes the full width of the container */
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.nsm-menu-table tbody tr {
+  border-bottom: 1px solid #e9ecef;
+}
+
+.nsm-menu-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.nsm-item-name {
+  padding: 0.5rem 1rem;
+  text-align: left;
+}
+
+.nsm-item-price {
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  text-align: right;
+  color: #d6336c;
+}
+
+/* Loading and error states */
+.nsm-loading,
+.nsm-error {
+  font-size: 1.2rem;
+  color: #6c757d;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+/* Highlight row on hover */
+.nsm-menu-table tbody tr:hover {
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease;
+}
+
+/* Optional: Change text color on hover */
+.nsm-menu-table tbody tr:hover .nsm-item-name,
+.nsm-menu-table tbody tr:hover .nsm-item-price {
+  color: #d6336c;
+  font-weight: 600;
+}
+
+/* Mobile responsiveness (smaller screens) */
+@media screen and (max-width: 1000px) {
+  .nsm-menu-container {
+    /* Convert the menu container to a CSS Grid layout. */
+    display: grid;
+    /* * This is the core of the responsive column layout.
+     * - `repeat(auto-fit, ...)`: Create as many columns as can fit.
+     * - `minmax(200px, 1fr)`: Each column must be at least 200px wide,
+     * but can grow to fill any extra space (1fr).
+     * This automatically handles 2, 3, 4, etc., columns without more media queries.
+     */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem;
+    /* Consistent spacing between all grid items. */
+  }
+
+  .nsm-menu-table {
+    width: 100%;
+    /* Ensure the table takes up the full width on mobile */
+    padding-left: 0;
+    /* Remove any left padding */
+  }
+}
