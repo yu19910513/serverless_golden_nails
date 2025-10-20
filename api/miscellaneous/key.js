@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // Handles GET /api/miscellaneous/key
 export default async function handler(req, res) {
+  console.log("api");
+  
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
     return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
@@ -22,8 +24,8 @@ export default async function handler(req, res) {
     }
 
     const supabase = createClient(
-      process.env.VITE_SUPABASE_URL,
-      process.env.VITE_SUPABASE_ANON_KEY,
+      process.env.SUPABASE_URL,
+      process.env.SUPABASE_ANON_KEY,
       {
         global: { headers: { Authorization: `Bearer ${token}` } },
       }
