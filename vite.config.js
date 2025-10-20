@@ -7,17 +7,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  // Add this 'server' section to configure the development server
   server: {
+    // We are re-introducing the proxy for local development ONLY.
+    // This tells the Vite server to forward any /api requests.
     proxy: {
-      // Proxy any request that starts with '/api'
       '/api': {
-        // This is the target where your backend serverless functions are running.
-        // Vercel CLI (which Vite uses under the hood for this setup) typically
-        // runs on port 3000 by default. If you have configured it differently,
-        // you may need to change this port.
-        target: 'http://localhost:3000',
-        // 'changeOrigin' is needed for virtual hosted sites
+        // This will be the address of our Vercel backend server.
+        target: 'http://localhost:3001',
         changeOrigin: true,
       },
     }
