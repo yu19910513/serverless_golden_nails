@@ -23,6 +23,7 @@ function isAdmin(token) {
 
 // Handles GET /api/miscellaneous
 export default async function handler(req, res) {
+    console.log("API hit!", req.url)
     // This endpoint only supports GET requests.
     if (req.method !== 'GET') {
         res.setHeader('Allow', ['GET']);
