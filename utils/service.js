@@ -27,7 +27,7 @@ export async function getCategorizedServices() {
     `
         )
         // Filter the joined services to only include non-deprecated ones.
-        .eq('services.deprecated', false)
+        .eq('services.deprecated', 0)
         // Order the parent categories by their ID
         .order('id', { ascending: true })
         // Order the nested services within each category by their ID
