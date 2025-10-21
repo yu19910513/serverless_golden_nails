@@ -75,7 +75,25 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 GRANT SELECT ON TABLES TO anon;
 ```
 
-5. Test Fetch
+### 5. Grant Full Access (Read, Write, Delete)
+
+⚠️ Warning: Use this script only if you want your public anon key to have full control over any table that does not have RLS enabled.
+
+```sql
+-- Grant ALL permissions for all EXISTING tables in the 'public' schema
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon;
+
+-- Grant permissions for all FUTURE tables in the 'public' schema
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO anon;
+
+-- Grant permissions for all EXISTING sequences (for auto-incrementing IDs)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO anon;
+
+-- Grant permissions for all FUTURE sequences
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO anon;
+```
+
+### 6. Test Fetch
 
 SQL test:
 
