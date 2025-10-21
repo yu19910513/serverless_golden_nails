@@ -1,4 +1,4 @@
-const jwt = require("jsonwebtoken");
+import jwt from 'jsonwebtoken';
 
 /**
  * Middleware to authenticate a user via JWT.
@@ -15,7 +15,7 @@ const jwt = require("jsonwebtoken");
  * 
  * @returns {void} - Calls `next()` if authentication succeeds, otherwise sends a 401 or 400 response.
  */
-const authenticateUser = (req, res, next) => {
+export const authenticateUser = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).send("Access Denied");
@@ -50,7 +50,7 @@ const authenticateUser = (req, res, next) => {
  * @returns {void} - Calls `next()` if the user is authorized as an admin,
  * otherwise sends a 401 or 403 response.
  */
-const authorizeAdmin = (req, res, next) => {
+export const authorizeAdmin = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) {
     return res.status(401).send("Access Denied: No token provided");
@@ -90,7 +90,7 @@ const authorizeAdmin = (req, res, next) => {
  * 
  * @returns {void} Calls `next()` if the Referer is authorized, otherwise responds with a 403 error.
  */
-const basic_auth = (req, res, next) => {
+export const basic_auth = (req, res, next) => {
   const allowedReferrers = process.env.ALLOWED_REFERRERS
     ? process.env.ALLOWED_REFERRERS.split(',')
     : [];
@@ -110,10 +110,8 @@ const basic_auth = (req, res, next) => {
  * @param {Object} payload - The data to be embedded in the token.
  * @returns {string} The signed JWT token.
  */
-const signToken = (payload) => {
+export const signToken = (payload) => {
   const secret = process.env.JWT_SECRET;
   const expiration = "2h";
   return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
 };
-
-module.exports = { authenticateUser, authorizeAdmin, signToken, basic_auth };

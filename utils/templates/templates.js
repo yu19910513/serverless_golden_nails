@@ -13,7 +13,7 @@
  * @param {"customer" | "owner"} recipient - The recipient type (customer or owner).
  * @returns {string} The generated message.
  */
-const appointmentMessage = (data, recipient) => {
+export const appointmentMessage = (data, recipient) => {
     if (recipient === "customer") {
         if (data.action === "confirm") {
             return `Hi ${data.recipient_name}, your appointment at Golden Nails Gig Harbor for ${data.appointment_services} on ${data.appointment_date} at ${data.appointment_start_time} is confirmed!\n\nTo view or cancel, visit: https://www.goldennailsgigharbor.com/appointmenthistory (name & phone needed).\n\nNote: No online cancellations within 24 hrs. Call (253) 851-7563 to reschedule. See you soon! 💅`;
@@ -29,5 +29,3 @@ const appointmentMessage = (data, recipient) => {
     }
     return "Invalid message type or recipient.";
 };
-
-module.exports = { appointmentMessage };

@@ -1,4 +1,4 @@
-const { DateTime } = require('luxon');
+import { DateTime } from 'luxon';
 
 /**
  * Checks if a new appointment overlaps with any existing appointments.
@@ -22,7 +22,7 @@ const { DateTime } = require('luxon');
  * const newEnd = DateTime.fromISO('2025-01-30T10:45', { zone: 'America/Los_Angeles' });
  * console.log(overlap(existingAppointments, newStart, newEnd)); // true
  */
-const overlap = (existingAppointments, newStart, newEnd) => {
+export const overlap = (existingAppointments, newStart, newEnd) => {
     for (const appointment of existingAppointments) {
         const appointmentStart = DateTime.fromISO(
             `${appointment.date}T${appointment.start_service_time}`,
@@ -44,5 +44,3 @@ const overlap = (existingAppointments, newStart, newEnd) => {
     }
     return false;
 };
-
-module.exports = overlap;

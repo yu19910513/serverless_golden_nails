@@ -1,8 +1,8 @@
-const twilio = require('twilio');
-const dotenv = require('dotenv');
-const nodemailer = require("nodemailer");
-const { generateHtmlFromTemplate } = require("./helper");
-const { appointmentMessage } = require('./templates/templates');
+import twilio from 'twilio';
+import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+import { generateHtmlFromTemplate } from './helper.js';
+import { appointmentMessage } from '../templates/templates.js';
 dotenv.config();
 
 
@@ -14,7 +14,7 @@ dotenv.config();
  * @returns {Promise<Object>} Returns the Twilio message object if successful,
  * or an object with { success: false, error: string } if there was an error.
  */
-const sendSMS = async (recipientPhoneNumber, message) => {
+export const sendSMS = async (recipientPhoneNumber, message) => {
     try {
         const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
         const sms = await client.messages.create({
@@ -44,7 +44,7 @@ const sendSMS = async (recipientPhoneNumber, message) => {
  * @returns {Promise<Object|undefined>} Returns { success: false, error: string } on failure,
  * otherwise returns undefined if the email is sent successfully.
  */
-const sendEmail = async (email_object) => {
+export const sendEmail = async (email_object) => {
     try {
         const transporter = nodemailer.createTransport({
             service: "gmail",
@@ -89,7 +89,7 @@ const sendEmail = async (email_object) => {
  *   { appointmentDate: '2025-03-01', patientName: 'John Doe' }
  * );
  */
-const sendEmailNotification = (recipients, subject, role, data_object) => {
+export const sendEmailNotification = (recipients, subject, role, data_object) => {
     if (!recipients.length) return console.warn(`No valid email provided for ${role}. Skipping email.`);
     sendEmail({
         address: recipients,
@@ -101,7 +101,3 @@ const sendEmailNotification = (recipients, subject, role, data_object) => {
         })
     });
 };
-
-
-
-module.exports = { sendSMS, sendEmail, sendEmailNotification };
