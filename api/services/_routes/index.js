@@ -2,35 +2,37 @@ import { getCategorizedServices } from '../../../utils/service.js';
 import { respond } from '../../../utils/response.js';
 
 /**
- * Express route handler to fetch all services grouped by category.
+ * Handles the GET /api/services request.
+ * Fetches all services and returns them grouped by their category.
  *
- * @async
- * @function getServices
+ * @api {get} /api/services Get all categorized services
+ * @apiName GetServices
+ * @apiGroup Services
+ *
  * @param {import('express').Request} req - The Express request object.
  * @param {import('express').Response} res - The Express response object.
- *
- * @returns {Promise<import('express').Response>} JSON response containing categorized services.
+ * @returns {Promise<import('express').Response>} A JSON response containing an array of category objects, each with a nested array of its services.
  *
  * @example
  * // GET /api/services
  * [
- *   {
- *     "id": 1,
- *     "name": "Nails",
- *     "services": [
- *       {
- *         "id": 101,
- *         "name": "Manicure",
- *         "description": "Basic nail cleaning and shaping",
- *         "price": 25,
- *         "time": 30,
- *         "category_id": 1
- *       }
- *     ]
- *   }
+ * {
+ * "id": 1,
+ * "name": "Nails",
+ * "services": [
+ * {
+ * "id": 101,
+ * "name": "Manicure",
+ * "description": "Basic nail cleaning and shaping",
+ * "price": 25,
+ * "time": 30,
+ * "category_id": 1
+ * }
+ * ]
+ * }
  * ]
  *
- * @throws Will send a 500 response if an error occurs while fetching services.
+ * @throws Will send a 500 server error response if fetching services fails.
  */
 export async function getServices(req, res) {
     try {
