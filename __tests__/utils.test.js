@@ -1,8 +1,8 @@
 // __tests__/utils.test.js
-import { isValidString } from '../utils/validate.js';
-import { respond } from '../utils/response.js';
-import { getMiscellaneousByTitle } from '../utils/miscellaneous.js';
-import { supabase } from '../utils/supabaseClient.js';
+import { isValidString } from '../api/_utils/validate.js';
+import { respond } from '../api/_utils/response.js';
+import { getMiscellaneousByTitle } from '../api/_utils/miscellaneous.js';
+import { supabase } from '../api/_utils/supabaseClient.js';
 
 // --- Mock Express response object ---
 function createMockRes() {
@@ -13,7 +13,7 @@ function createMockRes() {
 }
 
 // --- Mock Supabase ---
-jest.mock('../utils/supabaseClient.js', () => ({
+jest.mock('../api/_utils/supabaseClient.js', () => ({
     supabase: {
         from: jest.fn().mockReturnThis(),
         select: jest.fn().mockReturnThis(),
