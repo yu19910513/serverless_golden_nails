@@ -1,5 +1,5 @@
-import { verifyPasscodeAndSignToken } from '../../../utils/authentication.js';
-import { respond } from '../../../utils/response.js';
+import { verifyPasscodeAndSignToken } from '../../_utils/authentication.js';
+import { respond } from '../../_utils/response.js';
 
 /**
  * Handles the POST /api/authentication/verify-passcode request.

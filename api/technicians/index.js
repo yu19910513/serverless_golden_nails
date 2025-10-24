@@ -1,5 +1,5 @@
-import { getAllActiveTechnicians } from '../../utils/technician.js';
-import { respond } from '../../utils/response.js';
+import { getAllActiveTechnicians } from '../_utils/technician.js';
+import { respond } from '../_utils/response.js';
 
 /**
  * @api {get} /api/technicians Get all active technicians

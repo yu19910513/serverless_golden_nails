@@ -1,5 +1,5 @@
-import { upsertCustomer } from '../../utils/customer.js';
-import { respond } from '../../utils/response.js';
+import { upsertCustomer } from '../_utils/customer.js';
+import { respond } from '../_utils/response.js';
 
 /**
  * @api {put} /api/customers Create or update a customer

@@ -1,5 +1,5 @@
-import { findCustomerAndSendPasscode } from '../../../utils/authentication.js';
-import { respond } from '../../../utils/response.js';
+import { findCustomerAndSendPasscode } from '../../_utils/authentication.js';
+import { respond } from '../../_utils/response.js';
 
 /**
  * Handles the POST /api/authentication/send-passcode request.

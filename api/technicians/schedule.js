@@ -1,5 +1,5 @@
-import { getTechnicianSchedule } from '../../utils/technician.js';
-import { respond } from '../../utils/response.js';
+import { getTechnicianSchedule } from '../_utils/technician.js';
+import { respond } from '../_utils/response.js';
 
 /**
  * @api {get} /api/technicians/schedule Get technician schedule by date

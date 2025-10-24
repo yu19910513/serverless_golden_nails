@@ -1,5 +1,5 @@
-import { validateCustomer } from '../../utils/customer.js';
-import { respond } from '../../utils/response.js';
+import { validateCustomer } from '../_utils/customer.js';
+import { respond } from '../_utils/response.js';
 
 /**
  * @api {get} /api/customers/validate Validate customer by phone and name

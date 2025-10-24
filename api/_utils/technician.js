@@ -22,25 +22,45 @@ export async function getAllActiveTechnicians() {
 
 /**
  * Fetches technicians who belong to ALL specified categories.
- * This calls a Postgres function 'get_available_technicians'.
  *
  * @param {Number[]} categoryIds - An array of category IDs.
- * @returns {Promise<Array<Object>>} A promise that resolves to a list of
- * matching technicians.
- * @throws {Error} Throws an error if the Supabase RPC call fails.
+ * @returns {Promise<Array<Object>>} A promise that resolves to a list of matching technicians.
+ * @throws {Error} Throws an error if the Supabase query fails.
  */
 export async function getAvailableTechnicians(categoryIds) {
-    const { data, error } = await supabase.rpc(
-        'get_available_technicians',
-        { p_category_ids: categoryIds }
-    );
+    if (!categoryIds || !Array.isArray(categoryIds) || categoryIds.length === 0) {
+        throw new Error('Category IDs are required.');
+    }
+
+    const { data, error } = await supabase
+        .from('technicians')
+        .select(`
+      id,
+      name,
+      description,
+      phone,
+      unavailability,
+      vacation_ranges,
+      techniciancategory!inner(category_id)
+    `)
+        .eq('status', 1)
+        .in('techniciancategory.category_id', categoryIds);
 
     if (error) {
         console.error('Supabase error fetching available technicians:', error);
         throw error;
     }
-    return data || [];
+
+    // Only keep technicians that belong to ALL categoryIds
+    const filtered = data.filter(
+        tech =>
+            Array.from(new Set(tech.techniciancategory.map(tc => tc.category_id))).length ===
+            categoryIds.length
+    );
+
+    return filtered.map(({ techniciancategory, ...rest }) => rest);
 }
+
 
 /**
  * Fetches all active technicians and their non-deleted appointments

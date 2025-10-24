@@ -9,7 +9,7 @@
  * @module api/authentication/[...all]
  */
 
-import { createServerlessHandler } from '../../utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/createServerlessApp.js';
 import { sendPasscode } from './_routes/sendPasscode.js';
 import { verifyPasscode } from './_routes/verifyPasscode.js';
 

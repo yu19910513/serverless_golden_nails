@@ -1,5 +1,5 @@
-import { getAvailableTechnicians } from '../../utils/technician.js';
-import { respond } from '../../utils/response.js';
+import { getAvailableTechnicians } from '../_utils/technician.js';
+import { respond } from '../_utils/response.js';
 
 /**
  * @api {post} /api/technicians/available Get available technicians by category
