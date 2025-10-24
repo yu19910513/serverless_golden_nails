@@ -6,11 +6,14 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000', // vercel dev default port
+      '/api': {
+        target: 'http://localhost:3000', // vercel dev runs here
+        changeOrigin: true,              // fixes CORS and host issues
+        secure: false,                   // allow local http
+      },
     },
   },
   build: {
-    // Vercel expects the output directory to be 'dist' at the project root.
     outDir: 'dist',
   },
 })
