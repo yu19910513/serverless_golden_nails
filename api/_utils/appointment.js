@@ -137,7 +137,7 @@ export async function getAlternativeTechs(appointmentId) {
   const { data: allTechnicians, error: techError } = await supabase
     .from('technicians')
     .select('id, name, description, unavailability')
-    .eq('status', true);
+    .eq('status', 1);
 
   if (techError) throw techError;
 
