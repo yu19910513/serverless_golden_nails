@@ -29,3 +29,24 @@ export class OverlapError extends Error {
         this.conflictingSlot = conflictingSlot;
     }
 }
+
+/**
+ * Custom error class for "Not Found" scenarios.
+ * This allows the API handler to specifically catch and return a 404.
+ */
+export class NotFoundError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'NotFoundError';
+    }
+}
+
+/**
+ * Custom error class for scheduling conflicts (409).
+ */
+export class ConflictError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ConflictError';
+    }
+}

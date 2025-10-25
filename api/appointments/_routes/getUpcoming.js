@@ -7,71 +7,40 @@
  * @module api/appointments/_routes/getUpcoming
  */
 
-import { supabase } from '../../_utils/supabaseClient.js';
+import { getUpcomingAppointmentsForTech } from '../../_utils/appointment.js';
 import { respond } from '../../_utils/response.js';
-import { DateTime } from 'luxon';
+// No longer need supabase or luxon here
 
 /**
  * Handles the GET /api/appointments/upcoming request.
  *
- * Performs a two-step query:
- * 1. Finds all appointment IDs associated with the `tech_id` from the
- * `appointmenttechnician` join table.
- * 2. Fetches the full details for those appointments that are on or after
- * the current date and are not marked as 'deleted'.
+ * Validates the 'tech_id' and delegates fetching logic to
+ * the `getUpcomingAppointmentsForTech` helper.
  *
  * @param {import('express').Request} req - The Express request object.
- * @param {object} req.query - The request query parameters.
- * @param {string} req.query.tech_id - The ID of the technician whose upcoming
- * appointments are to be fetched.
+ * @param {string} req.query.tech_id - The ID of the technician.
  * @param {import('express').Response} res - The Express response object.
- * @returns {Promise<void>} A promise that resolves when the response is sent.
- * @throws {400} If the 'tech_id' query parameter is missing or invalid.
- * @throws {500} If a database error or other internal server error occurs.
+ * @returns {Promise<void>}
  */
 export async function getUpcoming(req, res) {
     const { tech_id } = req.query;
 
+    // 1. Request Validation
     if (!tech_id) {
         return respond.badRequest(res, 'Invalid or missing technician ID.');
     }
 
     try {
-        const today = DateTime.now().toISODate(); // 'YYYY-MM-DD'
+        // 2. Delegate Business Logic
+        const upcomingAppointments = await getUpcomingAppointmentsForTech(tech_id);
 
-        // 1. Get all appointment IDs for this technician
-        const { data: techAppointments, error: techError } = await supabase
-            .from('appointmenttechnician') // Your join table
-            .select('appointment_id')
-            .eq('technician_id', tech_id);
-
-        if (techError) throw techError;
-
-        const appointmentIds = techAppointments.map(a => a.appointment_id);
-
-        if (appointmentIds.length === 0) {
-            return respond.ok(res, []); // No appointments for this tech
-        }
-
-        // 2. Get the full appointment details for those IDs
-        const { data, error } = await supabase
-            .from('appointments')
-            .select(`
-                id,
-                date,
-                start_service_time,
-                technicians (id, name),
-                services (id, name, time)
-            `)
-            .in('id', appointmentIds)
-            .gte('date', today) // date >= today
-            .or('note.is.null,note.neq.deleted'); // (note IS NULL OR note != 'deleted')
-
-        if (error) throw error;
-        respond.ok(res, data);
+        // 3. Send Success Response
+        // The helper returns [] if no appointments, which is a valid OK response
+        return respond.ok(res, upcomingAppointments);
 
     } catch (error) {
+        // 4. Handle Errors
         console.error("Error fetching upcoming appointments:", error);
-        respond.serverError(res, 'Failed to fetch appointments.', error);
+        return respond.serverError(res, 'Failed to fetch appointments.', error);
     }
 }
