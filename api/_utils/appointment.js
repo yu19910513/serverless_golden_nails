@@ -125,7 +125,13 @@ export async function createAppointment({
 export async function getAlternativeTechs(appointmentId) {
   const { data: appointment, error: apptError } = await supabase
     .from('appointments')
-    .select(`id, date, start_service_time, note, services (id, time)`)
+    .select(`
+      id, 
+      date, 
+      start_service_time, 
+      note, 
+      Services:services (id, time)
+    `)
     .eq('id', appointmentId)
     .or('note.is.null,note.neq.deleted')
     .single();
@@ -164,9 +170,9 @@ export async function getDailyCalendarByTechnician(date) {
       id,
       date,
       start_service_time,
-      customer:customers (id, name),
-      technicians (id, name),
-      services (id, name, time)
+      Customer:customers (id, name),
+      Technicians:technicians (id, name),
+      Services:services (id, name, time)
     `)
     .eq('date', date)
     .or('note.is.null,note.neq.deleted');
@@ -175,12 +181,11 @@ export async function getDailyCalendarByTechnician(date) {
   if (!appointments) return [];
 
   const groupedByTechnician = appointments.reduce((acc, appointment) => {
-    if (!appointment.technicians || appointment.technicians.length === 0) {
+    if (!appointment.Technicians || appointment.Technicians.length === 0) {
       return acc;
     }
 
-    const { technicians, ...apptDetails } = appointment;
-
+    const { Technicians: technicians, ...apptDetails } = appointment;
     technicians.forEach((technician) => {
       if (!acc[technician.id]) {
         acc[technician.id] = {
@@ -213,8 +218,8 @@ export async function fetchCustomerHistory(customerId) {
       date,
       start_service_time,
       note,
-      technicians (id, name),
-      services (id, name, time, price)
+      Technicians:technicians (id, name),
+      Services:services (id, name, time, price)
     `)
     .eq('customer_id', customerId)
     .or('note.is.null,note.neq.deleted');
@@ -249,9 +254,9 @@ export async function getUpcomingAppointmentsForTech(technicianId) {
       id,
       date,
       start_service_time,
-      technicians (id, name),
-      services (id, name, time)
-    `)
+      Technicians:technicians (id, name),
+      Services:services (id, name, time)
+    `) 
     .in('id', appointmentIds)
     .gte('date', today)
     .or('note.is.null,note.neq.deleted');
@@ -264,8 +269,8 @@ export async function getUpcomingAppointmentsForTech(technicianId) {
  * Searches for non-deleted appointments using a keyword or date range filter.
  *
  * @param {string} [keyword] - Search term or control flag:
- *  - `'*'`: all future appointments  
- *  - `'**'`: all appointments (past and future)
+ * - `'*'`: all future appointments  
+ * - `'**'`: all appointments (past and future)
  * @returns {Promise<object[]>} Matching appointment records.
  * @throws {Error} If a Supabase query fails.
  */
@@ -280,20 +285,20 @@ export async function searchAppointmentsByKeyword(keyword) {
       date,
       start_service_time,
       note,
-      customer:customers (id, name, phone, email),
-      technicians (id, name),
-      services (id, name, time, price)
-    `)
+      Customer:customers (id, name, phone, email),
+      Technicians:technicians (id, name),
+      Services:services (id, name, time, price)
+    `) 
     .or('note.is.null,note.neq.deleted');
 
   if (searchKeyword) {
     const k = `%${searchKeyword}%`;
     query = query.or(
-      `customer.name.ilike.${k},` +
-      `customer.phone.ilike.${k},` +
-      `customer.email.ilike.${k},` +
-      `technicians.name.ilike.${k},` +
-      `services.name.ilike.${k}`
+      `Customer.name.ilike.${k},` +
+      `Customer.phone.ilike.${k},` +
+      `Customer.email.ilike.${k},` +
+      `Technicians.name.ilike.${k},` +
+      `Services.name.ilike.${k}`
     );
   }
 
@@ -366,7 +371,12 @@ export async function reassignAppointmentTechnician(appointmentId, newTechnician
 
   const { data: appointment, error: apptError } = await supabase
     .from('appointments')
-    .select('id, date, start_service_time, services(id, time)')
+    .select(`
+      id, 
+      date, 
+      start_service_time, 
+      Services:services(id, time)
+    `)
     .eq('id', appointmentId)
     .single();
 

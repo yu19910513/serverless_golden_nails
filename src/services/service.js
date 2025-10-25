@@ -1,13 +1,9 @@
 import axios from 'axios';
 
 /**
- * Creates a pre-configured Axios instance for all API communications.
- * This instance is created only once when the module is loaded, improving efficiency.
- *
- * It is configured with:
- * - A `baseURL` of '/api', so all requests are automatically sent to your serverless functions.
- * - A request interceptor that dynamically attaches the JWT token from localStorage
- * to the `Authorization` header of every outgoing request.
+ * @description A pre-configured Axios instance for all API communications.
+ * Includes a base URL ('/api') and default JSON content-type.
+ * @type {import('axios').AxiosInstance}
  */
 const apiClient = axios.create({
     baseURL: '/api',
@@ -16,7 +12,12 @@ const apiClient = axios.create({
     },
 });
 
-// The request interceptor adds the auth token to every request.
+/**
+ * @description Request interceptor to automatically attach the JWT
+ * token (from localStorage) to the Authorization header of every outgoing request.
+ * @param {import('axios').InternalAxiosRequestConfig} config The outgoing request configuration.
+ * @returns {import('axios').InternalAxiosRequestConfig} The modified config.
+ */
 apiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -29,11 +30,25 @@ apiClient.interceptors.request.use(
 );
 
 /**
- * A base service class that provides a shared and pre-configured Axios client.
- *
- * Any service that extends this class (e.g., AppointmentService, CustomerService)
- * will inherit the `this.http` property, allowing it to make authenticated API
- * calls without re-implementing the Axios configuration or token logic.
+ * @description Response interceptor to log all successful responses
+ * and errors for debugging purposes.
+ * @param {import('axios').AxiosResponse} response The successful API response.
+ * @returns {import('axios').AxiosResponse} The unmodified response.
+ */
+apiClient.interceptors.response.use(
+    (response) => {
+        console.log('API Response:', response);
+        return response;
+    },
+    (error) => {
+        console.error('API Error:', error.response || error.message);
+        return Promise.reject(error);
+    }
+);
+
+/**
+ * @description A base service class that provides a shared and pre-configured Axios client.
+ * Services should extend this class to inherit the `http` instance.
  */
 class Service {
     /**
