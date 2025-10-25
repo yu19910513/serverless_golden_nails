@@ -105,7 +105,7 @@ export async function createAppointment({
     }));
 
     const { error: serviceLinkError } = await supabase
-      .from('appointment_services')
+      .from('appointmentservice')
       .insert(serviceLinks);
 
     if (serviceLinkError) throw serviceLinkError;
