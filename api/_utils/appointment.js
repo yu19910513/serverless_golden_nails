@@ -256,7 +256,7 @@ export async function getUpcomingAppointmentsForTech(technicianId) {
       start_service_time,
       Technicians:technicians (id, name),
       Services:services (id, name, time)
-    `) 
+    `)
     .in('id', appointmentIds)
     .gte('date', today)
     .or('note.is.null,note.neq.deleted');
@@ -266,57 +266,170 @@ export async function getUpcomingAppointmentsForTech(technicianId) {
 }
 
 /**
- * Searches for non-deleted appointments using a keyword or date range filter.
+ * @description
+ * Searches for non-deleted appointments (`note` is not 'deleted').
  *
- * @param {string} [keyword] - Search term or control flag:
- * - `'*'`: all future appointments  
- * - `'**'`: all appointments (past and future)
- * @returns {Promise<object[]>} Matching appointment records.
- * @throws {Error} If a Supabase query fails.
+ * This function operates in two main modes:
+ * 1.  **Keyword Search:** If a `keyword` (that is not '*' or '**') is provided,
+ * it performs a case-insensitive search across:
+ * - `customers` (name, phone, email)
+ * - `technicians` (name)
+ * - `services` (name)
+ * It then finds all appointments linked to any of these matching records.
+ *
+ * 2.  **Time-Based Fetch:**
+ * - `*` (or default): Fetches all **future** appointments.
+ * - `**`: Fetches **all** appointments, including past ones.
+ *
+ * All matching appointments are then "hydrated" with their full related data
+ * (Customer, Technicians, and Services) before being returned.
+ *
+ * Future appointments are determined using the 'America/Los_Angeles' timezone,
+ * including any appointments scheduled for today at or after the current time.
+ *
+ * @param {string} [keyword] - The search term or a special control flag:
+ * - `'*'`: (Default) Returns all **future** non-deleted appointments.
+ * - `'**'`: Returns **all** non-deleted appointments (past and future).
+ * - `any other string`: Performs a keyword search.
+ *
+ * @returns {Promise<AppointmentWithDetails[]>} A promise that resolves to an
+ * array of matching appointment objects, each populated with its related
+ * customer, technicians, and services. Returns an empty array if no
+ * matches are found.
+ *
+ * @throws {Error} If any of the Supabase database queries fail.
  */
 export async function searchAppointmentsByKeyword(keyword) {
-  const searchKeyword = (keyword && keyword !== '*' && keyword !== '**') ? keyword.toLowerCase() : null;
+  const searchKeyword = (keyword && keyword !== '*' && keyword !== '**')
+    ? keyword.toLowerCase()
+    : null;
   const includePast = (keyword === '**');
 
-  let query = supabase
-    .from('appointments')
-    .select(`
-      id,
-      date,
-      start_service_time,
-      note,
-      Customer:customers (id, name, phone, email),
-      Technicians:technicians (id, name),
-      Services:services (id, name, time, price)
-    `) 
-    .or('note.is.null,note.neq.deleted');
+  const seattleNow = DateTime.now().setZone("America/Los_Angeles");
+  const today = seattleNow.toISODate();
+  const nowTime = seattleNow.toFormat('HH:mm:ss');
+
+  let appointmentIds = null;
 
   if (searchKeyword) {
     const k = `%${searchKeyword}%`;
-    query = query.or(
-      `Customer.name.ilike.${k},` +
-      `Customer.phone.ilike.${k},` +
-      `Customer.email.ilike.${k},` +
-      `Technicians.name.ilike.${k},` +
-      `Services.name.ilike.${k}`
-    );
+
+    const { data: customers } = await supabase
+      .from('customers')
+      .select('id')
+      .or(`name.ilike.${k},phone.ilike.${k},email.ilike.${k}`);
+    const customerIds = customers?.map(c => c.id) || [];
+
+    const { data: technicians } = await supabase
+      .from('technicians')
+      .select('id')
+      .ilike('name', k);
+    const technicianIds = technicians?.map(t => t.id) || [];
+
+    const { data: services } = await supabase
+      .from('services')
+      .select('id')
+      .ilike('name', k);
+    const serviceIds = services?.map(s => s.id) || [];
+
+    const { data: apptByCustomer } = await supabase
+      .from('appointments')
+      .select('id')
+      .in('customer_id', customerIds);
+
+    const { data: apptByTechnician } = await supabase
+      .from('appointmenttechnician')
+      .select('appointment_id')
+      .in('technician_id', technicianIds);
+
+    const { data: apptByService } = await supabase
+      .from('appointmentservice')
+      .select('appointment_id')
+      .in('service_id', serviceIds);
+
+    appointmentIds = [
+      ...(apptByCustomer?.map(a => a.id) || []),
+      ...(apptByTechnician?.map(a => a.appointment_id) || []),
+      ...(apptByService?.map(a => a.appointment_id) || []),
+    ];
+
+    appointmentIds = [...new Set(appointmentIds)];
+  }
+
+  let appointmentQuery = supabase.from('appointments')
+    .select('id, date, start_service_time, note, customer_id')
+    .or('note.is.null,note.neq.deleted');
+
+  if (appointmentIds) {
+    if (appointmentIds.length === 0) return [];
+    appointmentQuery = appointmentQuery.in('id', appointmentIds);
   }
 
   if (!includePast) {
-    const seattleNow = DateTime.now().setZone("America/Los_Angeles");
-    const today = seattleNow.toISODate();
-    const nowTime = seattleNow.toFormat('HH:mm:ss');
-    query = query.or(
-      `date.gt.${today},` +
-      `and(date.eq.${today},start_service_time.gte.${nowTime})`
+    appointmentQuery = appointmentQuery.or(
+      `date.gt.${today},and(date.eq.${today},start_service_time.gte.${nowTime})`
     );
   }
 
-  query = query.order('date', { ascending: false }).order('start_service_time', { ascending: true });
+  appointmentQuery = appointmentQuery.order('date', { ascending: false })
+    .order('start_service_time', { ascending: true });
 
-  const { data, error } = await query;
+  const { data: appointments, error } = await appointmentQuery;
   if (error) throw error;
-  return data || [];
+  if (!appointments?.length) return [];
+
+  const apptIds = appointments.map(a => a.id);
+  const customerIds = [...new Set(appointments.map(a => a.customer_id))];
+
+  const { data: customersData } = await supabase
+    .from('customers')
+    .select('id, name, phone, email')
+    .in('id', customerIds);
+
+  const { data: techLinks } = await supabase
+    .from('appointmenttechnician')
+    .select('appointment_id, technician_id')
+    .in('appointment_id', apptIds);
+
+  const techIds = [...new Set(techLinks.map(t => t.technician_id))];
+  const { data: techniciansData } = await supabase
+    .from('technicians')
+    .select('id, name')
+    .in('id', techIds);
+
+  const { data: serviceLinks } = await supabase
+    .from('appointmentservice')
+    .select('appointment_id, service_id')
+    .in('appointment_id', apptIds);
+
+  const serviceIds = [...new Set(serviceLinks.map(s => s.service_id))];
+  const { data: servicesData } = await supabase
+    .from('services')
+    .select('id, name, time, price')
+    .in('id', serviceIds);
+
+  const customerMap = Object.fromEntries(customersData.map(c => [c.id, c]));
+  const technicianMap = Object.fromEntries(techniciansData.map(t => [t.id, t]));
+  const serviceMap = Object.fromEntries(servicesData.map(s => [s.id, s]));
+
+  const techByAppt = techLinks.reduce((acc, t) => {
+    acc[t.appointment_id] = acc[t.appointment_id] || [];
+    acc[t.appointment_id].push(technicianMap[t.technician_id]);
+    return acc;
+  }, {});
+
+  const serviceByAppt = serviceLinks.reduce((acc, s) => {
+    acc[s.appointment_id] = acc[s.appointment_id] || [];
+    acc[s.appointment_id].push(serviceMap[s.service_id]);
+    return acc;
+  }, {});
+
+  return appointments.map(a => ({
+    ...a,
+    Customer: customerMap[a.customer_id] || null,
+    Technicians: techByAppt[a.id] || [],
+    Services: serviceByAppt[a.id] || [],
+  }));
 }
 
 /**
