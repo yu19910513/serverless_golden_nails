@@ -3,7 +3,7 @@ import handlebars from 'handlebars';
 import path from 'path';
 import { DateTime } from 'luxon';
 import { overlap } from './overlap.js';
-import { supabase } from '../supabaseClient.js';
+import { getTechnicianAppointmentsByDay } from '../appointment.js';
 
 /**
  * Groups appointments into future, present, and past, and sorts each group.
@@ -120,23 +120,10 @@ export const okayToAssign = async (technician, appointment) => {
             return false;
         }
 
-        const { data: existingAppointments, error } = await supabase
-            .from("appointments")
-            .select(
-                `
-      *,
-      Services:services ( time ),
-      technicians!inner ( id )
-    `
-            )
-            .eq("date", appointment.date)
-            .eq("technicians.id", technician.id)
-            .or("note.is.null,note.neq.deleted");
-
-        if (error) {
-            console.error("Error fetching existing appointments:", error);
-            throw error;
-        }
+        const existingAppointments = await getTechnicianAppointmentsByDay(
+            technician.id,
+            appointment.date
+        );
 
         const hasConflict = overlap(
             existingAppointments,

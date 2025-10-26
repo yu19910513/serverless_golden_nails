@@ -520,3 +520,39 @@ export async function reassignAppointmentTechnician(appointmentId, newTechnician
 
   return technician;
 }
+
+/**
+ * Retrieves all non-deleted appointments assigned to a specific technician on a given date.
+ *
+ * This query joins the `appointments`, `technicians`, and `services` tables to return
+ * detailed appointment data, including service duration (`time`).
+ *
+ * @async
+ * @function getTechnicianAppointmentsByDay
+ * @param {number|string} technicianId - The ID of the technician whose appointments to fetch.
+ * @param {string} date - The target date in `YYYY-MM-DD` format.
+ * @returns {Promise<Object[]>} A promise that resolves to an array of appointment records.
+ * @throws {Error} If the Supabase query fails.
+ */
+export const getTechnicianAppointmentsByDay = async (technicianId, date) => {
+  const { data: existingAppointments, error } = await supabase
+    .from("appointments")
+    .select(`
+      *,
+      Services:services ( time ),
+      technicians!inner ( id )
+    `)
+    .eq("date", date)
+    .eq("technicians.id", technicianId)
+    .or("note.is.null,note.neq.deleted");
+
+  if (error) {
+    console.error(
+      `Error fetching appointments for technician ${technicianId} on ${date}:`,
+      error
+    );
+    throw error;
+  }
+
+  return existingAppointments;
+};
