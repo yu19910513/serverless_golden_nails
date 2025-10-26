@@ -160,17 +160,34 @@ export const validateContactType = (input) => {
 };
 
 /**
- * Generates HTML from a Handlebars template.
- * (This function does not use the database and is unchanged)
+ * Reads a Handlebars template file, populates it with data, and returns HTML.
+ *
+ * This function resolves the path to a template, reads the file, compiles it,
+ * and injects the provided content.
+ *
+ * It is designed to fail gracefully:
+ * - If the template file is not found, it logs a warning and returns null.
+ * - If any other error occurs (e.g., file read, template compilation),
+ * it logs the error and returns null.
+ *
+ * This non-blocking behavior allows the email service to fall back
+ * to a plain-text version if HTML generation fails.
+ *
+ * @param {object} data_object - The configuration object.
+ * @param {string} data_object.template - The relative path to the .handlebars file
+ * (e.g., "appointment/new_appointment.handlebars").
+ * @param {object} data_object.content - The data to inject into the template.
+ * @returns {string|null} The compiled HTML string, or null if an error occurred.
  */
 export const generateHtmlFromTemplate = (data_object) => {
     try {
         // Resolve the template path
+        // NOTE: This assumes a `templates` folder adjacent to `legacy`
         const templatePath = path.resolve(__dirname, '../templates', data_object.template);
 
         // Check if the template file exists
         if (!fs.existsSync(templatePath)) {
-            console.warn(`Template file ${data_object.template} not found.`);
+            console.warn(`Template file ${data_object.template} not found at ${templatePath}.`);
             return null;
         }
 
@@ -182,9 +199,10 @@ export const generateHtmlFromTemplate = (data_object) => {
 
         // Return the populated template
         return compiledTemplate(data_object.content);
+
     } catch (error) {
         console.error("Error generating HTML from template:", error.message);
-        throw error; // Re-throw the error after logging it
+        return null;
     }
 };
 

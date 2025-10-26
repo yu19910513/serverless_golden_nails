@@ -72,26 +72,31 @@ export const sendEmail = async (email_object) => {
 };
 
 /**
- * Sends an email notification to the specified recipients with appointment details.
- * 
- * @param {Array<string>} recipients - An array of email addresses to which the email should be sent.
- * @param {string} subject - The subject of the email.
- * @param {string} role - The role associated with the email (e.g., "admin", "user").
- * @param {Object} data_object - The data object containing the appointment details to be included in the email.
- * 
- * @returns {void} Returns nothing. If no valid email recipients are provided, it logs a warning.
- * 
- * @example
- * sendEmailNotification(
- *   ['example@example.com'], 
- *   'Appointment Reminder', 
- *   'admin', 
- *   { appointmentDate: '2025-03-01', patientName: 'John Doe' }
- * );
+ * Prepares and sends an email notification using the sendEmail service.
+ *
+ * This function generates the plain-text and HTML content for an email
+ * and passes it to the sendEmail service.
+ *
+ * @param {string[]} recipients - An array of email addresses.
+ * @param {string} subject - The subject line for the email.
+ * @param {string} role - The recipient's role (e.g., "customer", "owner"), used for plain-text template.
+ * @param {object} data_object - The data object containing details for the email templates.
+ * @returns {Promise|void} A promise that resolves when the email is sent (from sendEmail),
+ * or void if no recipients are provided.
  */
 export const sendEmailNotification = (recipients, subject, role, data_object) => {
-    if (!recipients.length) return console.warn(`No valid email provided for ${role}. Skipping email.`);
-    sendEmail({
+    if (!recipients.length) {
+        console.warn(`No valid email provided for ${role}. Skipping email.`);
+        return; // Return void explicitly
+    }
+
+    // **VITAL SERVERLESS CHANGE**: 'return' the promise from sendEmail.
+    // In a serverless environment (like Vercel), the function
+    // terminates as soon as a response is sent. We MUST return
+    // this promise so the calling function can 'await' its
+    // completion *before* sending the HTTP response.
+    // Failing to do this will kill the email process mid-flight.
+    return sendEmail({
         address: recipients,
         subject,
         text: appointmentMessage(data_object, role),
