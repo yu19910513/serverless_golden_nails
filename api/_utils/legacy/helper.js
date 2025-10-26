@@ -51,10 +51,25 @@ export const now = () => {
 };
 
 /**
- * Determines whether a technician can be assigned to a given appointment
- * without overlapping existing appointments.
+ * Checks if a technician is available to be assigned to a new appointment.
  *
- * (CONVERTED TO USE SUPABASE)
+ * This function performs two main checks:
+ * 1. Verifies the technician is not marked as unavailable on that specific weekday.
+ * 2. Fetches all of the technician's existing appointments for that day and checks
+ * for any time conflicts using the `overlap` helper.
+ *
+ * @note This function was modified as part of a migration from a legacy MySQL
+ * database to Postgres (Supabase) and now uses Supabase queries.
+ *
+ * @param {object} technician - The technician object.
+ * @param {number} technician.id - The technician's unique ID.
+ * @param {string} [technician.unavailability] - A comma-separated string of unavailable weekdays (e.g., "0,6").
+ * @param {object} appointment - The appointment object to check.
+ * @param {string} appointment.date - The appointment date in "YYYY-MM-DD" format.
+ * @param {string} appointment.start_service_time - The start time in "HH:mm" format.
+ * @param {Array<object>} appointment.Services - An array of service objects, each with a `time` property.
+ * @returns {Promise<boolean>} A promise that resolves to `true` if the technician can be assigned,
+ * or `false` if they are unavailable or a time conflict exists.
  */
 export const okayToAssign = async (technician, appointment) => {
     try {
@@ -68,66 +83,66 @@ export const okayToAssign = async (technician, appointment) => {
             return false;
         }
 
-        // Renamed to avoid conflict with 'services' table name
         const appointmentServices = appointment.Services;
         if (!appointmentServices || appointmentServices.length === 0) {
             console.log("No services found for the appointment");
             return false;
         }
 
-        // Parse start time correctly with Luxon
-        const startServiceTime = DateTime.fromISO(`${appointment.date}T${appointment.start_service_time}`, { zone: "America/Los_Angeles" });
+        const startServiceTime = DateTime.fromISO(
+            `${appointment.date}T${appointment.start_service_time}`,
+            { zone: "America/Los_Angeles" }
+        );
         if (!startServiceTime.isValid) {
             console.log("Invalid start service time");
             return false;
         }
 
-        // Calculate end time
-        const totalServiceMinutes = appointmentServices.reduce((sum, service) => sum + service.time, 0);
-        const endServiceTime = startServiceTime.plus({ minutes: totalServiceMinutes });
+        const totalServiceMinutes = appointmentServices.reduce(
+            (sum, service) => sum + service.time,
+            0
+        );
+        const endServiceTime = startServiceTime.plus({
+            minutes: totalServiceMinutes,
+        });
 
-        // Luxon weekday: Monday = 1, Sunday = 7
         const selectedWeekday = startServiceTime.weekday % 7; // Make Sunday = 0
 
-        // Parse technician's unavailability (array of numbers 0-6)
         const unavailableDays = (technician.unavailability || "")
             .split(",")
-            .map(day => day.trim())
-            .filter(day => day !== "")
+            .map((day) => day.trim())
+            .filter((day) => day !== "")
             .map(Number)
-            .filter(day => !isNaN(day) && day >= 0 && day <= 6);
+            .filter((day) => !isNaN(day) && day >= 0 && day <= 6);
 
         if (unavailableDays.includes(selectedWeekday)) {
             console.log("Technician is unavailable on this weekday");
             return false;
         }
 
-        // --- CONVERTED QUERY ---
-        // Fetch existing appointments for the technician on that date
-        // We join 'appointments_technicians' to filter by technician.id
-        // We join 'appointments_services' and then 'services' to get service times
         const { data: existingAppointments, error } = await supabase
-            .from('appointments')
-            .select(`
-        *,
-        services ( time ),
-        technicians!inner ( id )
-      `)
-            .eq('date', appointment.date)
-            .eq('technicians.id', technician.id) // Filter by technician ID
-            .or('note.is.null,note.neq.deleted'); // Filter out "deleted" notes
+            .from("appointments")
+            .select(
+                `
+      *,
+      Services:services ( time ),
+      technicians!inner ( id )
+    `
+            )
+            .eq("date", appointment.date)
+            .eq("technicians.id", technician.id)
+            .or("note.is.null,note.neq.deleted");
 
         if (error) {
             console.error("Error fetching existing appointments:", error);
-            throw error; // Let the catch block handle it
+            throw error;
         }
-        // --- END CONVERTED QUERY ---
 
-        // Check for overlap — PASS Luxon objects directly
-        // NOTE: The `overlap` function must be compatible with the data
-        // structure returned by Supabase, which is:
-        // [ { ..., services: [ { time: 30 }, { time: 60 } ] }, ... ]
-        const hasConflict = overlap(existingAppointments, startServiceTime, endServiceTime);
+        const hasConflict = overlap(
+            existingAppointments,
+            startServiceTime,
+            endServiceTime
+        );
 
         return !hasConflict;
     } catch (err) {
