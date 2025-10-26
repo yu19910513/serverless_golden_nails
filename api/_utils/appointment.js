@@ -58,7 +58,7 @@ export async function createAppointment({
 
   const { data: existingAppointments, error: apptError } = await supabase
     .from('appointments')
-    .select('*, services ( time )')
+    .select('*, Services:services ( time )')
     .in('id', appointmentIds)
     .eq('date', date)
     .or('note.is.null,note.neq.deleted');

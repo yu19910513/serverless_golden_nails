@@ -6,7 +6,7 @@ const Footer = () => (
   <footer className="footer">
     <div className="footer-container">
       <small className="footer-text copyright">
-        &copy; {new Date().getFullYear()} Golden Nails & SPA. All rights reserved to Auric LLC.
+        &copy; {new Date().getFullYear()} Auric LLC. All rights reserved.
       </small>
       <small className="footer-text privacy">
         <Link to="/privacy-policy" className="footer-link">Privacy Policy</Link> | 

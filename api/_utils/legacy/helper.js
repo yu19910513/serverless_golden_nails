@@ -1,9 +1,13 @@
 import fs from 'fs';
 import handlebars from 'handlebars';
-import path from 'path';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { DateTime } from 'luxon';
 import { overlap } from './overlap.js';
 import { getTechnicianAppointmentsByDay } from '../appointment.js';
+// Get the ESM equivalents of __filename and __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Groups appointments into future, present, and past, and sorts each group.
@@ -162,7 +166,7 @@ export const validateContactType = (input) => {
 export const generateHtmlFromTemplate = (data_object) => {
     try {
         // Resolve the template path
-        const templatePath = path.resolve(__dirname, 'templates', data_object.template);
+        const templatePath = path.resolve(__dirname, '../templates', data_object.template);
 
         // Check if the template file exists
         if (!fs.existsSync(templatePath)) {
