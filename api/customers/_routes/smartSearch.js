@@ -1,16 +1,14 @@
-import { smartSearchCustomers } from '../_utils/customer.js';
-import { respond } from '../_utils/response.js';
+import { smartSearchCustomers } from '../../_utils/customer.js';
+import { respond } from '../../_utils/response.js';
 
 /**
  * @api {get} /api/customers/smart_search Smart search for customers
  * @apiName SmartSearchCustomers
  * @apiGroup Customers
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
  */
-export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return respond.methodNotAllowed(res, req.method);
-    }
-
+export async function smartSearch(req, res) {
     // The helper function handles all logic for empty, "*", or a search term.
     const keyword = (req.query.keyword || '').trim().toLowerCase();
 

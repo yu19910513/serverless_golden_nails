@@ -1,16 +1,14 @@
-import { validateCustomer } from '../_utils/customer.js';
-import { respond } from '../_utils/response.js';
+import { validateCustomer } from '../../_utils/customer.js';
+import { respond } from '../../_utils/response.js';
 
 /**
  * @api {get} /api/customers/validate Validate customer by phone and name
  * @apiName ValidateCustomer
  * @apiGroup Customers
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
  */
-export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return respond.methodNotAllowed(res, req.method);
-    }
-
+export async function validate(req, res) {
     const { phone, name } = req.query;
 
     if (!phone || !name || phone.trim() === '' || name.trim() === '') {

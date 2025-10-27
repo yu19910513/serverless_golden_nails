@@ -1,16 +1,14 @@
-import { searchCustomerByPhone } from '../_utils/customer.js';
-import { respond } from '../_utils/response.js';
+import { searchCustomerByPhone } from '../../_utils/customer.js';
+import { respond } from '../../_utils/response.js';
 
 /**
  * @api {get} /api/customers/search Search customer by phone
  * @apiName SearchCustomer
  * @apiGroup Customers
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
  */
-export default async function handler(req, res) {
-    if (req.method !== 'GET') {
-        return respond.methodNotAllowed(res, req.method);
-    }
-
+export async function searchCustomer(req, res) {
     const { phone } = req.query;
 
     if (!phone) {
