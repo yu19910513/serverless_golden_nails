@@ -22,9 +22,9 @@ export const appointmentMessage = (data, recipient) => {
         }
     } else if (recipient === "owner") {
         if (data.action === "confirm") {
-            return `Appointment confirmed for ${data.recipient_name} (${data.recipient_phone}) on ${data.appointment_date}, from ${data.appointment_start_time} to ${data.appointment_end_time}. Technician: ${data.appointment_technician}. Services: ${data.appointment_services}.`;
+            return `Appointment confirmed for ${data.recipient_name} (${data.recipient_phone}) on ${data.appointment_date}, from ${data.appointment_start_time} to ${data.appointment_end_time}. Technician: ${data.appointment_technician}. Services: ${data.appointment_services}. via Vercel`;
         } else if (data.action === "cancel") {
-            return `Appointment cancelled by ${data.recipient_name} (${data.recipient_phone}), scheduled for ${data.appointment_date}, at ${data.appointment_start_time}. Technician: ${data.appointment_technician}.`;
+            return `Appointment cancelled by ${data.recipient_name} (${data.recipient_phone}), scheduled for ${data.appointment_date}, at ${data.appointment_start_time}. Technician: ${data.appointment_technician}. via Vercel`;
         }
     }
     return "Invalid message type or recipient.";
