@@ -21,6 +21,7 @@ import BookingChoice from './pages/bookingChoice';
 // Main App Component
 const App = () => (
   <Router>
+    <ScrollRestoration />
     <Header />
     <Routes>
       <Route path="/" element={<Home />} />
