@@ -1,5 +1,5 @@
 import { React } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, ScrollRestoration } from 'react-router-dom';
 import Header from './components/global/Header';
 import Footer from './components/global/Footer';
 import Home from './pages/home';
