@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient.js';
 import { sendEmail, sendSMS } from './legacy/notification.js';
 import { validateContactType } from './legacy/helper.js';
-import { signToken } from './legacy/authentication.js';
+import { signToken, getTokenExpiration } from './legacy/authentication.js';
 
 /**
  * Finds a customer, generates/saves a passcode,
@@ -92,12 +92,16 @@ export async function verifyPasscodeAndSignToken(identifier, passcode) {
     }
 
     // 4. Sign the token using your imported helper
-    const token = signToken({
+    const tokenExpiration = getTokenExpiration(customer.admin_privilege);
+
+    const payload = {
         phone: customer.phone,
         id: customer.id,
         name: customer.name,
         admin_privilege: customer.admin_privilege,
-    });
+    };
+
+    const token = signToken(payload, tokenExpiration);
 
     return token;
 }
