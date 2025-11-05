@@ -119,7 +119,7 @@ export const basic_auth = (req, res, next) => {
  * @returns {string | undefined} The expiration string (e.g., "15m", "1y") or
  * `undefined` (to use the JWT signing default).
  */
-const getTokenExpiration = (isAdmin = false) => {
+export const getTokenExpiration = (isAdmin = false) => {
   if (isAdmin) {
     const adminExp = process.env.ADMIN_TOKEN_EXPIRATION;
 
