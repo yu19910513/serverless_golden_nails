@@ -1,4 +1,5 @@
 import express from 'express';
+import { basic_auth } from './legacy/authentication.js';
 
 /**
  * Wraps an Express app into a Vercel serverless handler with a base path.
@@ -15,7 +16,7 @@ export function createServerlessHandler(basePath, mountRoutes) {
     mountRoutes(router);
 
     // Mount the router at the base path
-    app.use(basePath, router);
+    app.use(basePath, basic_auth, router);
 
     return function handler(req, res) {
         return app(req, res);
