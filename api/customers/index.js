@@ -1,43 +1,27 @@
-import { upsertCustomer } from '../_utils/customer.js';
-import { respond } from '../_utils/response.js';
+/**
+ * @file Main API entry point for the /api/customers root route.
+ *
+ * This file serves as the Vercel serverless function for the
+ * `/api/customers` endpoint. It delegates root requests (like PUT)
+ * to specific handlers.
+ *
+ * @module api/customers/index
+ */
+
+import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { handleUpsertCustomer } from './_routes/upsertCustomer.js'; // Import the new handler name
 
 /**
- * @api {put} /api/customers Create or update a customer
- * @apiName UpsertCustomer
- * @apiGroup Customers
+ * Creates and exports the Vercel serverless function for the /api/customers base route.
  */
-export default async function handler(req, res) {
-    if (req.method !== 'PUT') {
-        return respond.methodNotAllowed(res, req.method);
-    }
-
-    const { id, name, phone } = req.body;
-
-    // Validation from original logic: name and phone are required IF it's not
-    // an update-by-id.
-    if (!id && (!name || !phone)) {
-        return respond.badRequest(res, 'Name and phone are required for new customers.');
-    }
-
-    try {
-        // The helper function contains all the complex logic
-        const { customer, status } = await upsertCustomer(req.body);
-
-        // Handle the different outcomes
-        if (status === 'not-found') {
-            return res.status(404).json({ message: 'Customer not found.' });
-        }
-        if (status === 'created') {
-            return res.status(201).json({ message: 'Customer created.', customer });
-        }
-        if (status === 'updated-by-id') {
-            return res.status(200).json({ message: 'Customer updated by ID.', customer });
-        }
-        if (status === 'updated-by-phone') {
-            return res.status(200).json({ message: 'Customer updated by phone.', customer });
-        }
-    } catch (err) {
-        console.error('Error processing customer:', err);
-        respond.serverError(res, 'Internal server error.');
-    }
-}
+export default createServerlessHandler('/api/customers', (router) => {
+    /**
+     * Route to create or update a customer.
+     * @name PUT /api/customers
+     * @function
+     * @memberof module:api/customers/index
+     * @inner
+     * @param {Function} handleUpsertCustomer - Handler from `./_routes/upsertCustomer.js`.
+     */
+    router.put("/", handleUpsertCustomer); // Use the new handler name
+});
