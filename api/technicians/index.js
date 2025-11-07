@@ -8,7 +8,7 @@
  * @module api/technicians/index
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 import { getAllTechnicians } from './_routes/getAllTechnicians.js';
 
 /**

@@ -7,8 +7,8 @@
  * @module api/appointments/_routes/searchAppointments
  */
 
-import { searchAppointmentsByKeyword } from '../../_utils/appointment.js';
-import { respond } from '../../_utils/response.js';
+import { searchAppointmentsByKeyword } from '../../_utils/queries/appointment.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the GET /api/appointments/search request.

@@ -1,5 +1,5 @@
-import { createAppointment } from '../../_utils/appointment.js';
-import { respond } from '../../_utils/response.js';
+import { createAppointment } from '../../_utils/queries/appointment.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * @api {post} /api/appointments Create a new appointment

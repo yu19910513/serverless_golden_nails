@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient.js'; // Path to your Supabase client
+import { supabase } from '../helpers/supabaseClient.js'; // Path to your Supabase client
 
 /**
  * Fetches all categories and their non-deprecated services from Supabase.

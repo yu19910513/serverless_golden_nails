@@ -8,7 +8,7 @@
  * @module api/notification/[...all]
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 import { postContact } from './_routes/contact.js';
 import { postNotify } from './_routes/notify.js';
 

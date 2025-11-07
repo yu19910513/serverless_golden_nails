@@ -9,7 +9,7 @@
  * @module api/technicians/[...all]
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 
 import { getAvailable } from './_routes/getAvailable.js';
 import { getSchedule } from './_routes/getSchedule.js';

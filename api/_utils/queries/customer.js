@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient.js'; // Path to your Supabase client
+import { supabase } from '../helpers/supabaseClient.js'; // Path to your Supabase client
 
 /**
  * Fetches a single customer by an exact phone number.

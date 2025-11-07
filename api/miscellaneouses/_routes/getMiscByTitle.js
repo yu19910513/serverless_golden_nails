@@ -1,6 +1,6 @@
-import { isValidString } from '../../_utils/validate.js';
-import { getMiscellaneousByTitle } from '../../_utils/miscellaneous.js';
-import { respond } from '../../_utils/response.js';
+import { isValidString } from '../../_utils/helpers/validate.js';
+import { getMiscellaneousByTitle } from '../../_utils/queries/miscellaneous.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the request to get a miscellaneous item by its title.

@@ -8,7 +8,7 @@
  * @module api/miscellaneous/index
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 import { handleGetMiscByTitle } from './_routes/getMiscByTitle.js';
 
 /**

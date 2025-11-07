@@ -7,8 +7,8 @@
  * @module api/appointments/_routes/getUpcoming
  */
 
-import { getUpcomingAppointmentsForTech } from '../../_utils/appointment.js';
-import { respond } from '../../_utils/response.js';
+import { getUpcomingAppointmentsForTech } from '../../_utils/queries/appointment.js';
+import { respond } from '../../_utils/helpers/response.js';
 // No longer need supabase or luxon here
 
 /**

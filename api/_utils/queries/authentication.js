@@ -1,7 +1,7 @@
-import { supabase } from './supabaseClient.js';
-import { sendEmail, sendSMS } from './legacy/notification.js';
-import { validateContactType } from './legacy/helper.js';
-import { signToken, getTokenExpiration } from './legacy/authentication.js';
+import { supabase } from '../helpers/supabaseClient.js';
+import { sendEmail, sendSMS } from '../legacy/notification.js';
+import { validateContactType } from '../legacy/helper.js';
+import { signToken, getTokenExpiration } from '../legacy/authentication.js';
 
 /**
  * Finds a customer, generates/saves a passcode,

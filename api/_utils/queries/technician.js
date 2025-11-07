@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient.js';
+import { supabase } from '../helpers/supabaseClient.js';
 
 /**
  * Fetches all active technicians (status: true).

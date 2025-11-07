@@ -1,5 +1,5 @@
-import { searchCustomerByPhone } from '../../_utils/customer.js';
-import { respond } from '../../_utils/response.js';
+import { searchCustomerByPhone } from '../../_utils/queries/customer.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * @api {get} /api/customers/search Search customer by phone

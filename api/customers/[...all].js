@@ -8,7 +8,7 @@
  * @module api/customers/[...all]
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 
 import { searchCustomer } from './_routes/searchCustomer.js';
 import { smartSearch } from './_routes/smartSearch.js';
