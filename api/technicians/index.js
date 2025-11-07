@@ -1,23 +1,27 @@
-import { getAllActiveTechnicians } from '../_utils/technician.js';
-import { respond } from '../_utils/response.js';
+/**
+ * @file Main API entry point for the /api/technicians root route.
+ *
+ * This file serves as the Vercel serverless function specifically for the
+ * `/api/technicians` endpoint. It delegates the request to the
+ * `getAllTechnicians` handler using an Express router instance.
+ *
+ * @module api/technicians/index
+ */
+
+import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { getAllTechnicians } from './_routes/getAllTechnicians.js';
 
 /**
- * @api {get} /api/technicians Get all active technicians
- * @apiName GetTechnicians
- * @apiGroup Technicians
+ * Creates and exports the Vercel serverless function for the /api/technicians base route.
  */
-export default async function handler(req, res) {
-    // Ensure the request is a GET method
-    if (req.method !== 'GET') {
-        return respond.methodNotAllowed(res, req.method);
-    }
-
-    try {
-        // Fetch the data using the abstracted utility function
-        const technicians = await getAllActiveTechnicians();
-        res.status(200).json(technicians);
-    } catch (err) {
-        console.error("Error in /api/technicians handler:", err);
-        respond.serverError(res, 'An internal server error occurred while fetching technicians.');
-    }
-}
+export default createServerlessHandler('/api/technicians', (router) => {
+    /**
+     * Route to get all active technicians.
+     * @name GET /api/technicians/
+     * @function
+     * @memberof module:api/technicians/index
+     * @inner
+     * @param {Function} getAllTechnicians - Handler from `./_routes/getAllTechnicians.js`.
+     */
+    router.get("/", getAllTechnicians);
+});

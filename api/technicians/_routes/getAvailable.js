@@ -1,26 +1,21 @@
-import { getAvailableTechnicians } from '../_utils/technician.js';
-import { respond } from '../_utils/response.js';
+import { getAvailableTechnicians } from '../../_utils/technician.js';
+import { respond } from '../../_utils/response.js';
 
 /**
  * @api {post} /api/technicians/available Get available technicians by category
  * @apiName GetAvailableTechnicians
  * @apiGroup Technicians
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
  */
-export default async function handler(req, res) {
-    // Ensure the request is a POST method
-    if (req.method !== 'POST') {
-        return respond.methodNotAllowed(res, req.method);
-    }
-
+export async function getAvailable(req, res) {
     try {
         const { categoryIds } = req.body;
 
-        // Validate input in the handler
         if (!categoryIds || !Array.isArray(categoryIds) || categoryIds.length === 0) {
             return respond.badRequest(res, 'Category IDs are required.');
         }
 
-        // Fetch the data using the abstracted utility function
         const technicians = await getAvailableTechnicians(categoryIds);
         res.status(200).json(technicians);
     } catch (err) {

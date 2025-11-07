@@ -1,26 +1,21 @@
-import { getTechnicianSchedule } from '../_utils/technician.js';
-import { respond } from '../_utils/response.js';
+import { getTechnicianSchedule } from '../../_utils/technician.js';
+import { respond } from '../../_utils/response.js';
 
 /**
  * @api {get} /api/technicians/schedule Get technician schedule by date
  * @apiName GetTechnicianSchedule
  * @apiGroup Technicians
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
  */
-export default async function handler(req, res) {
-    // Ensure the request is a GET method
-    if (req.method !== 'GET') {
-        return respond.methodNotAllowed(res, req.method);
-    }
-
+export async function getSchedule(req, res) {
     try {
         const { date } = req.query;
 
-        // Validate input in the handler
         if (!date) {
             return respond.badRequest(res, 'Date parameter is required.');
         }
 
-        // Fetch the data using the abstracted utility function
         const schedule = await getTechnicianSchedule(date);
         res.status(200).json(schedule);
     } catch (err) {
