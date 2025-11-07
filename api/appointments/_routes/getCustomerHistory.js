@@ -6,8 +6,8 @@
  * @module api/appointments/_routes/getCustomerHistory
  */
 
-import { fetchCustomerHistory } from '../../_utils/appointment.js';
-import { respond } from '../../_utils/response.js';
+import { fetchCustomerHistory } from '../../_utils/queries/appointment.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the GET /api/appointments/customer_history request.

@@ -8,8 +8,8 @@
  */
 
 // Import the *new* helper function
-import { getAlternativeTechs } from '../../_utils/appointment.js';
-import { respond } from '../../_utils/response.js';
+import { getAlternativeTechs } from '../../_utils/queries/appointment.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the GET /api/appointments/find_alternative_techs request.

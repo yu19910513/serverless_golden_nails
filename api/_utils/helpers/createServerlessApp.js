@@ -1,5 +1,5 @@
 import express from 'express';
-import { basic_auth } from './legacy/authentication.js';
+import { basic_auth } from '../legacy/authentication.js';
 
 /**
  * Wraps an Express app into a Vercel serverless handler with a base path.

@@ -9,7 +9,7 @@
  * @module api/services/index
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 import { getServices } from './_routes/index.js';
 
 export default createServerlessHandler('/api/services', (router) => {

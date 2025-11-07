@@ -1,5 +1,5 @@
 // /utils/miscellaneous.js
-import { supabase } from './supabaseClient.js';
+import { supabase } from '../helpers/supabaseClient.js';
 
 /**
  * Fetches a miscellaneous record from the Supabase `miscellaneouses` table by its title.

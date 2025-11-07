@@ -1,5 +1,5 @@
-import { smartSearchCustomers } from '../../_utils/customer.js';
-import { respond } from '../../_utils/response.js';
+import { smartSearchCustomers } from '../../_utils/queries/customer.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * @api {get} /api/customers/smart_search Smart search for customers

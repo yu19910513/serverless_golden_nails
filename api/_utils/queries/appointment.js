@@ -1,7 +1,7 @@
-import { supabase } from './supabaseClient.js';
+import { supabase } from '../helpers/supabaseClient.js';
 import { DateTime } from 'luxon';
-import { overlap, okayToAssign, groupAppointments } from './legacy/helper.js';
-import { ClientError, OverlapError, NotFoundError, ConflictError } from './errors.js';
+import { overlap, okayToAssign, groupAppointments } from '../legacy/helper.js';
+import { ClientError, OverlapError, NotFoundError, ConflictError } from '../helpers/errors.js';
 
 /**
  * Creates a new appointment with associated technicians and services.

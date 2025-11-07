@@ -1,5 +1,5 @@
-import { sendEmail } from '../../_utils/notification.js';
-import { respond } from '../../_utils/response.js';
+import { sendEmail } from '../../_utils/queries/notification.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the POST /api/notification/contact request.

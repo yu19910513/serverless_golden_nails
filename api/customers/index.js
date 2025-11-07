@@ -8,7 +8,7 @@
  * @module api/customers/index
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 import { handleUpsertCustomer } from './_routes/upsertCustomer.js'; // Import the new handler name
 
 /**

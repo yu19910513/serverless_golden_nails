@@ -6,8 +6,8 @@
  * @module api/appointments/_routes/updateTechnician
  */
 
-import { reassignAppointmentTechnician } from '../../_utils/appointment.js';
-import { respond } from '../../_utils/response.js';
+import { reassignAppointmentTechnician } from '../../_utils/queries/appointment.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the PUT /api/appointments/update_technician request.

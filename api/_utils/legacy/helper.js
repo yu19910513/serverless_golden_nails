@@ -4,7 +4,7 @@ import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { DateTime } from 'luxon';
 import { overlap } from './overlap.js';
-import { getTechnicianAppointmentsByDay } from '../appointment.js';
+import { getTechnicianAppointmentsByDay } from '../queries/appointment.js';
 // Get the ESM equivalents of __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

@@ -7,8 +7,8 @@
  * @module api/appointments/_routes/getCalendar
  */
 
-import { getDailyCalendarByTechnician } from '../../_utils/appointment.js';
-import { respond } from '../../_utils/response.js';
+import { getDailyCalendarByTechnician } from '../../_utils/queries/appointment.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the GET /api/appointments/calender request.

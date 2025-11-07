@@ -1,5 +1,5 @@
-import { getCategorizedServices } from '../../_utils/service.js';
-import { respond } from '../../_utils/response.js';
+import { getCategorizedServices } from '../../_utils/queries/service.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the GET /api/services request.

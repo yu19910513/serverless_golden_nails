@@ -8,7 +8,7 @@
  * @module api/appointments/index
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 import { create } from './_routes/createAppointment.js';
 
 /**

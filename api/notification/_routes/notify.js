@@ -1,6 +1,6 @@
-import { sendSMS, sendEmailNotification } from '../../_utils/notification.js';
+import { sendSMS, sendEmailNotification } from '../../_utils/queries/notification.js';
 import { appointmentMessage } from '../../_utils/templates/templates.js';
-import { respond } from '../../_utils/response.js';
+import { respond } from '../../_utils/helpers/response.js';
 
 /**
  * Handles the POST /api/notification/notify request.

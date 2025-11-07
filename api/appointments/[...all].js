@@ -9,7 +9,7 @@
  * @module api/appointments/[...all]
  */
 
-import { createServerlessHandler } from '../_utils/createServerlessApp.js';
+import { createServerlessHandler } from '../_utils/helpers/createServerlessApp.js';
 
 import { getUpcoming } from './_routes/getUpcoming.js';
 import { getCalendar } from './_routes/getCalendar.js';
