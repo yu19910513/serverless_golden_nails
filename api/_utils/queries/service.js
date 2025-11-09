@@ -31,7 +31,7 @@ export async function getCategorizedServices() {
         // Order the parent categories by their ID
         .order('id', { ascending: true })
         // Order the nested services within each category by their ID
-        .order('id', { foreignTable: 'services', ascending: true });
+        .order('name', { referencedTable: 'services', ascending: true });
 
     if (error) {
         console.error('Supabase error fetching categorized services:', error);
