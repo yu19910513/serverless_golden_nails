@@ -8,6 +8,8 @@
     "coverage": "jest --coverage",
     "test:api-utils": "jest __tests__/api-utils",
     "test:src": "jest src/__tests__",
+    "coverage:src": "jest --coverage src/__tests__",
+    "coverage:src:all": "jest --coverage --collectCoverageFrom=\"src/**/*.{js,jsx}\" --collectCoverageFrom=\"!src/**/__tests__/**\" src/__tests__",
     "dev": "vite",
     "vercel-dev": "vercel dev",
     "prestart": "vercel --version || npm install -g vercel",
