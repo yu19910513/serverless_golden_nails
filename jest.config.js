@@ -1,7 +1,15 @@
 export default {
   testEnvironment: 'node', // default; override via CLI for frontend
   transform: {
-    '^.+\\.[t|j]sx?$': 'babel-jest',
+    '^.+\\.[t|j]sx?$': [
+      'babel-jest',
+      {
+        babelrc: false,
+        configFile: false,
+        presets: ['@babel/preset-env', '@babel/preset-react'],
+        plugins: ['@babel/plugin-transform-modules-commonjs', 'transform-import-meta'],
+      },
+    ],
   },
   collectCoverage: true,
   collectCoverageFrom: [
