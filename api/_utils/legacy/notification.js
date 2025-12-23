@@ -2,7 +2,7 @@ import twilio from 'twilio';
 import dotenv from 'dotenv';
 import nodemailer from "nodemailer";
 import { generateHtmlFromTemplate } from "./helper.js";
-import { appointmentMessage } from './templates/templates';
+import { appointmentMessage } from '../templates/templates.js';
 dotenv.config();
 
 

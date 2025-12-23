@@ -27,7 +27,7 @@ jest.mock('../../api/_utils/legacy/helper.js', () => ({
 // Mock text template builder
 // Important: mock the path as required within legacy/notification.js
 jest.mock(
-  '../../api/_utils/legacy/templates/templates',
+  '../../api/_utils/templates/templates.js',
   () => ({ appointmentMessage: jest.fn(() => 'TEXT MESSAGE') }),
   { virtual: true }
 );
@@ -35,7 +35,7 @@ jest.mock(
 import twilio from 'twilio';
 import nodemailer from 'nodemailer';
 // Access the mocked templates module for assertions
-const { appointmentMessage } = jest.requireMock('../../api/_utils/legacy/templates/templates');
+const { appointmentMessage } = jest.requireMock('../../api/_utils/templates/templates.js');
 import { generateHtmlFromTemplate } from '../../api/_utils/legacy/helper.js';
 import * as notification from '../../api/_utils/legacy/notification.js';
 
