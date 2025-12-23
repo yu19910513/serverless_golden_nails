@@ -1,8 +1,8 @@
-const twilio = require('twilio');
-const dotenv = require('dotenv');
-const nodemailer = require("nodemailer");
-const { generateHtmlFromTemplate } = require("./helper");
-const { appointmentMessage } = require('./templates/templates');
+import twilio from 'twilio';
+import dotenv from 'dotenv';
+import nodemailer from "nodemailer";
+import { generateHtmlFromTemplate } from "./helper.js";
+import { appointmentMessage } from './templates/templates';
 dotenv.config();
 
 
@@ -14,7 +14,7 @@ dotenv.config();
  * @returns {Promise<Object>} Returns the Twilio message object if successful,
  * or an object with { success: false, error: string } if there was an error.
  */
-const sendSMS = async (recipientPhoneNumber, message) => {
+export const sendSMS = async (recipientPhoneNumber, message) => {
     try {
         const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
         const sms = await client.messages.create({
@@ -34,17 +34,31 @@ const sendSMS = async (recipientPhoneNumber, message) => {
 
 
 /**
- * Sends an email using Nodemailer with a Gmail transporter.
+ * Email sending utilities.
  *
- * @param {Object} email_object - Object containing email details.
- * @param {string|string[]} email_object.address - Recipient email address(es).
- * @param {string} email_object.subject - Subject line of the email.
- * @param {string} [email_object.text] - Plain text body of the email (optional).
- * @param {string} email_object.html - HTML body of the email.
- * @returns {Promise<Object|undefined>} Returns { success: false, error: string } on failure,
- * otherwise returns undefined if the email is sent successfully.
+ * Provides `sendEmail`, a convenience method that sends email via a Gmail
+ * transporter configured with environment variables.
+ *
+ * Environment variables:
+ * - `BUSINESS_EMAIL`: Sender email address (Gmail).
+ * - `APP_PASSWORD`: Gmail App Password for the sender account.
+ *
+ * Return semantics:
+ * - Resolves to `undefined` on success.
+ * - Resolves to `{ success: false, error: string }` on failure (non-throwing).
  */
-const emailApi = {
+export const emailApi = {
+    /**
+     * Sends an email using Nodemailer with a Gmail transporter.
+     *
+     * @param {Object} email_object - Email payload.
+     * @param {string|string[]} email_object.address - Recipient email address(es).
+     * @param {string} email_object.subject - Subject line.
+     * @param {string} [email_object.text] - Optional plain-text body.
+     * @param {string} email_object.html - HTML body.
+     * @returns {Promise<void | { success: false, error: string }>} `undefined` on success,
+     * or an object describing the failure.
+     */
     sendEmail: async (email_object) => {
         try {
             const transporter = nodemailer.createTransport({
@@ -74,24 +88,30 @@ const emailApi = {
 };
 
 /**
- * Sends an email notification to the specified recipients with appointment details.
+ * Composes and dispatches an appointment email notification.
  *
- * @param {Array<string>} recipients - An array of email addresses to which the email should be sent.
- * @param {string} subject - The subject of the email.
- * @param {string} role - The role associated with the email (e.g., "admin", "user").
- * @param {Object} data_object - The data object containing the appointment details to be included in the email.
+ * Builds a plain-text message via `appointmentMessage(data_object, role)` and an
+ * HTML body via `generateHtmlFromTemplate` using a template inferred from the
+ * `subject` (e.g., "New Appointment" → `appointment/new_appointment.handlebars`).
  *
- * @returns {void} Returns nothing. If no valid email recipients are provided, it logs a warning.
+ * Non-blocking behavior: this function does not `await` the actual send; it
+ * dispatches `emailApi.sendEmail(...)` and returns immediately. If `recipients`
+ * is empty, it logs a warning and does nothing.
  *
+ * @param {string[]} recipients - Recipient email addresses.
+ * @param {string} subject - Email subject; used to infer the template path.
+ * @param {string} role - Recipient role for text message composition (e.g., "owner", "customer").
+ * @param {Object} data_object - Data used to render text and HTML templates.
+ * @returns {void}
  * @example
  * sendEmailNotification(
- *   ['example@example.com'],
- *   'Appointment Reminder',
- *   'admin',
- *   { appointmentDate: '2025-03-01', patientName: 'John Doe' }
+ *   ['a@example.com', 'b@example.com'],
+ *   'New Appointment',
+ *   'owner',
+ *   { action: 'confirm', recipient_name: 'Ada' }
  * );
  */
-const sendEmailNotification = (recipients, subject, role, data_object) => {
+export const sendEmailNotification = (recipients, subject, role, data_object) => {
     if (!recipients.length) return console.warn(`No valid email provided for ${role}. Skipping email.`);
     emailApi.sendEmail({
         address: recipients,
@@ -104,4 +124,19 @@ const sendEmailNotification = (recipients, subject, role, data_object) => {
     });
 };
 
-module.exports = { sendSMS, sendEmail: emailApi.sendEmail, sendEmailNotification, emailApi };
+/**
+ * Named export for direct email sending.
+ *
+ * Alias for `emailApi.sendEmail` with the same signature and return semantics.
+ *
+ * @type {(email_object: { address: string|string[], subject: string, text?: string, html: string })
+ *   => Promise<void | { success: false, error: string }>>}
+ */
+export const sendEmail = emailApi.sendEmail;
+
+export default {
+    sendSMS,
+    sendEmail,
+    sendEmailNotification,
+    emailApi,
+};
