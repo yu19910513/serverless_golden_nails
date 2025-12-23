@@ -13,6 +13,11 @@ jest.mock('../services/technicianService', () => ({
     getAvailableTechnicians: jest.fn(),
 }));
 
+// Mock MiscellaneousService to control bufferTime behavior for "today"
+jest.mock('../services/miscellaneousService', () => ({
+    find: jest.fn(),
+}));
+
 /**
  * Mocks the Helper utility module with a self-contained implementation.
  * This prevents dependency issues and provides controlled behavior for tests.
@@ -66,6 +71,7 @@ jest.mock('../utils/helper', () => {
 
 const Helper = require('../utils/helper');
 const TechnicianService = require('../services/technicianService');
+const MiscellaneousService = require('../services/miscellaneousService');
 const HelperApiModule = require('../utils/helper_api');
 
 const {
@@ -313,5 +319,48 @@ describe('fetchAvailability', () => {
         expect(result.times).toEqual([mockSlot1]);
 
         assignTechsSpy.mockRestore();
+    });
+});
+
+describe('assignTechnicians bufferTime behavior (today)', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+        // Minimal schedule map for techs
+        TechnicianService.getScheduleByDate.mockResolvedValue({ data: [{ id: 10, Appointments: [] }] });
+    });
+
+    test('uses MiscellaneousService bufferTime when valid (ceil applied)', async () => {
+        // bufferTime = 2.3 → ceil to 3
+        MiscellaneousService.find.mockResolvedValue({ data: { context: '2.3' } });
+        // Provide one tech option and expect getCommonAvailableSlots called with buffer = 3
+        Helper.getCommonAvailableSlots.mockReturnValue([new Date()]);
+
+        const appointmentTechMap = [[{ id: 10, name: 'Alice' }]];
+        const appointments = [[{ id: 1, category_id: 101, time: 30 }]];
+
+        const result = await HelperApiModule.assignTechnicians(appointmentTechMap, appointments, new Date());
+        expect(result.assignedTechs.length).toBe(1);
+        // Fifth arg is bufferTimeHours
+        const lastCallArgs = Helper.getCommonAvailableSlots.mock.lastCall;
+        expect(lastCallArgs[4]).toBe(3);
+    });
+
+    test('falls back to default buffer when value missing/invalid', async () => {
+        // invalid value → default 2 hours
+        MiscellaneousService.find.mockResolvedValue({ data: { context: 'abc' } });
+        Helper.getCommonAvailableSlots.mockReturnValue([new Date()]);
+
+        await HelperApiModule.assignTechnicians([[{ id: 10, name: 'Alice' }]], [[{ id: 1, category_id: 101, time: 30 }]], new Date());
+        const lastCallArgs = Helper.getCommonAvailableSlots.mock.lastCall;
+        expect(lastCallArgs[4]).toBe(2);
+    });
+
+    test('falls back to default buffer when MiscellaneousService.find throws', async () => {
+        MiscellaneousService.find.mockRejectedValue(new Error('network'));
+        Helper.getCommonAvailableSlots.mockReturnValue([new Date()]);
+
+        await HelperApiModule.assignTechnicians([[{ id: 10, name: 'Alice' }]], [[{ id: 1, category_id: 101, time: 30 }]], new Date());
+        const lastCallArgs = Helper.getCommonAvailableSlots.mock.lastCall;
+        expect(lastCallArgs[4]).toBe(2);
     });
 });
